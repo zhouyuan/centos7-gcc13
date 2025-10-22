@@ -1,4 +1,8 @@
-FROM centos:7 as base
+FROM centos:7 as base0
+
+FROM base0 as base
+RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
+
 
 # Git
 FROM base as git
