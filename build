@@ -1,7 +1,13 @@
 #! /bin/sh
 version=1.1
 podman build --network=host -f Dockerfile.cent7 -t docker.io/inteldpo/gluten:centos7-gcc13:$version .
-podman tag docker.io/inteldpo/gluten:centos7-gcc13:$version docker.io/inteldop/gluten:/centos7-gcc13:latest
+podman tag docker.io/inteldpo/gluten:centos7-gcc13_$version docker.io/inteldop/gluten:centos7-gcc13_latest
 
 podman build --network=host -f Dockerfile.cent8 -t docker.io/inteldpo/gluten:centos8-gcc13:$version .
-podman tag docker.io/inteldpo/gluten:centos8-gcc13:$version docker.io/inteldop/gluten:/centos8-gcc13:latest
+podman tag docker.io/inteldpo/gluten:centos8-gcc13_$version docker.io/inteldop/gluten:centos8-gcc13_latest
+
+podman build --network=host -f Dockerfile.cent7-gcc14 -t docker.io/inteldpo/gluten:centos7-gcc14_$version .
+podman tag docker.io/inteldpo/gluten:centos7-gcc14_$version docker.io/inteldop/gluten:centos7-gcc14_latest
+
+podman build --network=host -f Dockerfile.cent8 -t docker.io/inteldpo/gluten:centos8-gcc13_$version .
+podman tag docker.io/inteldpo/gluten:centos8-gcc13_$version docker.io/inteldop/gluten:centos8-gcc14_latest
