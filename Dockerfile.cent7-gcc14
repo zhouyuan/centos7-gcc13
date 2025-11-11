@@ -16,12 +16,12 @@ RUN  yum update -y && yum install -y epel-release centos-release-scl; \
        yum install -y devtoolset-11-gcc-c++;
 
 
-FROM base as utils
+FROM gcc-11 as utils
 RUN yum update -y && yum install -y wget bzip2 pcre-devel
 
 
-FROM base as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz && tar -xf gcc-14.1.0.tar.gz && cd gcc-14.1.0 \
+FROM utils as gcc
+RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz && tar -xf gcc-14.1.0.tar.gz && cd gcc-14.1.0; \
     ./contrib/download_prerequisites; \
     mkdir build && cd build ; \
     source /opt/rh/devtoolset-11/enable; \
