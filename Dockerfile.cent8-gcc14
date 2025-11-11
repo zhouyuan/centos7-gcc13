@@ -1,18 +1,13 @@
 FROM centos:8 as base0
 
 FROM base0 as base
-RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
+RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; \
+    sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
 
 # install gcc-11
 FROM base as gcc-11
-RUN yum update -y && yum install -y epel-release centos-release-scl; \
-    rm /etc/yum.repos.d/CentOS-SCLo-scl.repo -f; \
-    sed -i \
-       -e 's/^mirrorlist/#mirrorlist/' \
-       -e 's/^#baseurl/baseurl/' \
-       -e 's/mirror\.centos\.org/vault.centos.org/' \
-       /etc/yum.repos.d/CentOS-SCLo-scl-rh.repo; \
-       yum install -y devtoolset-11-gcc-c++;
+RUN yum update -y && yum install -y epel-release; \
+       yum install -y gcc-toolset-11;
 
 
 FROM gcc-11 as utils
@@ -20,10 +15,10 @@ RUN yum update -y && yum install -y wget bzip2 pcre-devel
 
 
 FROM utils as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz & tar -xf gcc-14.1.0.tar.gz & cd gcc-14.1.0 \
+RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz && tar -xf gcc-14.1.0.tar.gz && cd gcc-14.1.0; \
     ./contrib/download_prerequisites; \
-    mkdir build & cd build ; \
-    source /opt/rh/devtoolset-11/enable; \
+    mkdir build && cd build ; \
+    source /opt/rh/gcc-toolset-11/enable; \
     ../configure --disable-multilib --enable-languages=c,c++; \
    make -j $(nproc) && make install 
 

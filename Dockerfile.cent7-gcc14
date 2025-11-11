@@ -1,11 +1,12 @@
 FROM centos:7 as base0
 
 FROM base0 as base
-RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
+RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; \
+    sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
 
 # install gcc-11
 FROM base as gcc-11
-RUN     yum install -y epel-release centos-release-scl; \
+RUN  yum update -y && yum install -y epel-release centos-release-scl; \
     rm /etc/yum.repos.d/CentOS-SCLo-scl.repo -f; \
     sed -i \
        -e 's/^mirrorlist/#mirrorlist/' \
@@ -20,9 +21,9 @@ RUN yum update -y && yum install -y wget bzip2 pcre-devel
 
 
 FROM base as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz & tar -xf gcc-14.1.0.tar.gz & cd gcc-14.1.0 \
+RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz && tar -xf gcc-14.1.0.tar.gz && cd gcc-14.1.0 \
     ./contrib/download_prerequisites; \
-    mkdir build & cd build ; \
+    mkdir build && cd build ; \
     source /opt/rh/devtoolset-11/enable; \
     ../configure --disable-multilib --enable-languages=c,c++; \
    make -j $(nproc) && make install 
