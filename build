@@ -9,5 +9,5 @@ podman tag docker.io/inteldpo/gluten:centos8-gcc13_$version docker.io/inteldop/g
 podman build --network=host -f Dockerfile.cent7-gcc14 -t docker.io/inteldpo/gluten:centos7-gcc14_$version .
 podman tag docker.io/inteldpo/gluten:centos7-gcc14_$version docker.io/inteldop/gluten:centos7-gcc14_latest
 
-podman build --network=host -f Dockerfile.cent8 -t docker.io/inteldpo/gluten:centos8-gcc13_$version .
-podman tag docker.io/inteldpo/gluten:centos8-gcc13_$version docker.io/inteldop/gluten:centos8-gcc14_latest
+podman build --network=host -f Dockerfile.cent8-gcc14 -t docker.io/inteldpo/gluten:centos8-gcc14_$version .
+podman tag docker.io/inteldpo/gluten:centos8-gcc14_$version docker.io/inteldop/gluten:centos8-gcc14_latest
