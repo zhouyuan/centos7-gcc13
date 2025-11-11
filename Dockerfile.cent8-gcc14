@@ -5,7 +5,7 @@ RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*;
 
 # install gcc-11
 FROM base as gcc-11
-RUN     yum install -y epel-release centos-release-scl; \
+RUN yum update -y && yum install -y epel-release centos-release-scl; \
     rm /etc/yum.repos.d/CentOS-SCLo-scl.repo -f; \
     sed -i \
        -e 's/^mirrorlist/#mirrorlist/' \
