@@ -29,13 +29,14 @@ RUN yum -y install gcc-c++ make zlib-devel gettext bison
 RUN cd binutils-2.41 && ./configure; make -j$(nproc) && make install
 
 FROM binutils as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz && tar -xf gcc-14.1.0.tar.gz && cd gcc-14.1.0; \
+RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.3.0/gcc-14.3.0.tar.gz && tar -xf gcc-14.3.0.tar.gz && cd gcc-14.3.0; \
     ./contrib/download_prerequisites; \
     mkdir build && cd build ; \
     source /opt/rh/devtoolset-11/enable; \
     ../configure --disable-multilib --enable-languages=c,c++; \
    make -j $(nproc) && make install 
-
+RUN echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig
+RUN yum remove gcc -y
 
  
 

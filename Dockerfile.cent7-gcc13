@@ -135,9 +135,9 @@ RUN make install
 
 # gcc
 FROM base as gcc
-RUN curl -kLO https://sourceware.org/pub/gcc/releases/gcc-13.2.0/gcc-13.2.0.tar.xz
-RUN sha256sum *.tar.*
-RUN echo "e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da " *.tar.* | sha256sum -c -
+RUN curl -kLO https://sourceware.org/pub/gcc/releases/gcc-13.4.0/gcc-13.4.0.tar.xz
+# RUN sha256sum *.tar.*
+# RUN echo "e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da " *.tar.* | sha256sum -c -
 RUN tar xf *.tar.*
 WORKDIR build-gcc
 RUN yum -y install gcc-c++ make

@@ -34,3 +34,5 @@ RUN wget https://ftp.gnu.org/gnu/gcc/gcc-13.4.0/gcc-13.4.0.tar.gz && tar -xf gcc
     source /opt/rh/gcc-toolset-11/enable; \
     ../configure --disable-multilib --enable-languages=c,c++; \
    make -j $(nproc) && make install
+RUN echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig
+RUN yum remove gcc -y
