@@ -4,35 +4,18 @@ FROM base0 as base
 RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
 RUN yum update -y && yum install epel-release wget perl git bzip2 -y && yum install -y gcc-toolset-11;
 
-# texinfo
-FROM base as texinfo
-RUN curl -kLO https://ftp.gnu.org/gnu/texinfo/texinfo-6.8.tar.xz
-RUN tar xf texinfo*.tar.*
-WORKDIR build-texinfo
-RUN yum -y install gcc make m4
-RUN ../texinfo*/configure
-RUN make -j$(nproc)
-RUN make install
-
-# Binutils
-FROM texinfo as binutils
-#RUN curl -LO https://ftp.gnu.org/gnu/binutils/binutils-2.41.tar.xz
-RUN curl -LO https://ftp.wayne.edu/gnu/binutils/binutils-2.41.tar.xz
-RUN sha256sum binutils*.tar.*
-RUN echo "ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450 " binutils*.tar.* | sha256sum -c -
-RUN tar xf binutils*.tar.*
-WORKDIR build-binutils
-RUN yum -y install gcc-c++ make zlib-devel gettext bison
-RUN ../binutils*/configure
-RUN make -j$(nproc)
-RUN make install
-
-FROM binutils as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-13.4.0/gcc-13.4.0.tar.gz && tar -xf gcc-13.4.0.tar.gz && cd gcc-13.4.0; \
+RUN cd /tmp; curl -kLO https://ftp.gnu.org/gnu/texinfo/texinfo-6.8.tar.xz; \
+    tar xf texinfo*.tar.*; \
+    yum -y install gcc make m4; \
+    cd texinfo-6.8 && ./configure ; make -j$(nproc) && make install; \
+    cd /tmp ; curl -LO https://ftp.wayne.edu/gnu/binutils/binutils-2.41.tar.xz; \
+    tar xf binutils*.tar.*; \
+    yum -y install gcc-c++ make zlib-devel gettext bison; \
+    cd binutils-2.41 && ./configure; make -j$(nproc) && make install; \
+    cd /tmp; wget https://ftp.gnu.org/gnu/gcc/gcc-13.4.0/gcc-13.4.0.tar.gz && tar -xf gcc-13.4.0.tar.gz && cd gcc-13.4.0; \
     ./contrib/download_prerequisites; \
     mkdir build && cd build ; \
     source /opt/rh/gcc-toolset-11/enable; \
-    ../configure --disable-multilib --enable-languages=c,c++; \
-   make -j $(nproc) && make install
-RUN echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig
-RUN yum remove gcc -y
+    ../configure --disable-multilib --enable-languages=c,c++ --prefix=/usr; \
+   make -j $(nproc) && make install; \
+   echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig; rm -rf /tmp/*

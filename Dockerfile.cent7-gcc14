@@ -4,8 +4,6 @@ FROM base0 as base
 RUN /usr/bin/sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*; \
     sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*;
 
-# install gcc-11
-FROM base as gcc-11
 RUN  yum update -y && yum install -y epel-release centos-release-scl; \
     rm /etc/yum.repos.d/CentOS-SCLo-scl.repo -f; \
     sed -i \
@@ -13,31 +11,15 @@ RUN  yum update -y && yum install -y epel-release centos-release-scl; \
        -e 's/^#baseurl/baseurl/' \
        -e 's/mirror\.centos\.org/vault.centos.org/' \
        /etc/yum.repos.d/CentOS-SCLo-scl-rh.repo; \
-       yum install -y devtoolset-11-gcc-c++;
-
-
-FROM gcc-11 as utils
-RUN yum update -y && yum install -y wget bzip2 pcre-devel
-
-# Binutils
-FROM utils as binutils
-RUN curl -LO https://ftp.wayne.edu/gnu/binutils/binutils-2.41.tar.xz
-RUN sha256sum binutils*.tar.*
-RUN echo "ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450 " binutils*.tar.* | sha256sum -c -
-RUN tar xf binutils*.tar.*
-RUN yum -y install gcc-c++ make zlib-devel gettext bison
-RUN cd binutils-2.41 && ./configure; make -j$(nproc) && make install
-
-FROM binutils as gcc
-RUN wget https://ftp.gnu.org/gnu/gcc/gcc-14.3.0/gcc-14.3.0.tar.gz && tar -xf gcc-14.3.0.tar.gz && cd gcc-14.3.0; \
+    yum install -y devtoolset-11-gcc-c++ wget bzip2 pcre-devel gcc-c++ make zlib-devel gettext bison; \
+    cd /tmp; curl -LO https://ftp.wayne.edu/gnu/binutils/binutils-2.41.tar.xz; tar xf binutils*.tar.*; \
+    cd binutils-2.41 && ./configure; make -j$(nproc) && make install; \
+    cd /tmp; wget https://ftp.gnu.org/gnu/gcc/gcc-14.3.0/gcc-14.3.0.tar.gz && tar -xf gcc-14.3.0.tar.gz && cd gcc-14.3.0; \
     ./contrib/download_prerequisites; \
     mkdir build && cd build ; \
     source /opt/rh/devtoolset-11/enable; \
-    ../configure --disable-multilib --enable-languages=c,c++; \
-   make -j $(nproc) && make install 
-RUN echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig
-RUN yum remove gcc -y
-
- 
-
+    ../configure --disable-multilib --enable-languages=c,c++ --prefix=/usr; \
+   make -j $(nproc) && make install ; \
+   echo -e '/usr/local/lib\n/usr/local/lib64' > /etc/ld.so.conf.d/local.conf && ldconfig; \
+   rm -rf /tmp/*
 
